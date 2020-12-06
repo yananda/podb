@@ -220,7 +220,7 @@ $objPHPExcel->getProperties()->setCreator("Export Purchase Order")
                                         $quantity = (int)$value ;
                                     }
                                     // $zise = float($size);
-                                    if($r['RangeType'] == 'US' || $r['RangeType']== 'UK' || $r['RangeType'] == 'US Child' ||$r['RangeType'] == 'US Youth' || $r['RangeType'] == 'US Half Sizes' || $r['RangeType'] == 'Mens' || $r['RangeType'] == 'Womens'){
+                                    if($r['RangeType'] == 'US' || $r['RangeType'] == 'US Full Sizes' ||$r['RangeType'] == 'US Half Sizes' || $r['RangeType']== 'UK' || $r['RangeType'] == 'US Child' ||$r['RangeType'] == 'US Youth' || $r['RangeType'] == 'US Half Sizes' || $r['RangeType'] == 'Mens' || $r['RangeType'] == 'Womens'){
                                         $t = (float)$size * 10;
                                         $temp = (int)$t;
                                         if($multiple){

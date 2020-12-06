@@ -133,7 +133,7 @@
             global $db,$objArray;
             $productTypeID = $objArray['params']['productTypeID'];
 
-            $sql='SELECT * FROM size_range_types where ProductTypeID = '.$productTypeID;
+            $sql='SELECT * FROM size_range_types where ProductTypeID = '. $productTypeID . ' order by DisplayOrder';
             $result = mysqli_query($db, $sql);
             if($result == false){
                 echo "Fail Query";
@@ -251,7 +251,28 @@
         function getCategoriesFrom3DCartInventory(){
             global $db,$objArray;
             $VendorName = $objArray['params']['VendorName'];
-            $sql='SELECT DISTINCT extra_field_2, categories , hide, manufacturer FROM 3dcart_inventoryexport WHERE manufacturer ="' .$VendorName.'" and hide ="0";';
+            $productType = $objArray['params']['ProductType'];
+            if($productType == "Womens Shoes") {
+                $gender ="Female";
+            }
+            else if($productType == "Mens Shoes") {
+                $gender ="Male";
+            }
+            else if($productType == "Kids Shoes") {
+                $gender ="Kids";
+            }
+            else if($productType == "Unisex") {
+                $gender ="Unisex";
+            }
+            else {
+                $gender = "other";
+            }
+            if($gender != "other"){
+                $sql='SELECT DISTINCT extra_field_2, extra_field_8, categories , hide, manufacturer FROM 3dcart_inventoryexport WHERE manufacturer ="' .$VendorName.'" and extra_field_8 = "'. $gender . '" and hide ="0";';
+            }
+            else {
+                $sql='SELECT DISTINCT extra_field_2, categories , hide, manufacturer FROM 3dcart_inventoryexport WHERE manufacturer ="' .$VendorName.'" and hide ="0";';
+            }
             $result = mysqli_query($db, $sql);
             if($result == false){
                 echo "Fail Query";

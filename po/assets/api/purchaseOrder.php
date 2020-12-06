@@ -8,7 +8,7 @@
 
     $Obj = new PurchaseOrder();
     $Obj->$action();
-
+    
     class PurchaseOrder {
         
         function getAllPurchaseOrders(){
@@ -156,24 +156,25 @@
         function addNewPurchaseOrder(){
             global $objArray,$db;
             $obj = $objArray['params']['po'];
-
+            $userID = $objArray['params']['userID'];            
+            date_default_timezone_set("America/New_York");
+            $createdDate = date("Y-m-d h:i:sa");            
+           
             $obj['StoreName']= mysqli_real_escape_string($db, $obj['StoreName']);
             $obj['VendorName']= mysqli_real_escape_string($db, $obj['VendorName']);
             $obj['BrandName']= mysqli_real_escape_string($db, $obj['BrandName']);
-            
 
             $sql="INSERT INTO PurchaseOrder (POType,
                  PurchaseOrderNumber, VendorID, VendorName, BrandID, BrandName,
                  OrderDate, ShipDate, CancelDate, StoreID, StoreNumber,
-                 Notes
+                 Notes, CreatedByID, CreatedDate, LastModifiedByID, LastModifiedDate
                  ) 
             VALUES (
                 '".$obj['POType']."','".$obj['PurchaseOrderNumber']."','". $obj['VendorID'] ."','".$obj['VendorName'] ."',
                 '". $obj['BrandID'] ."','". $obj['BrandName'] ."',
                 '". $obj['OrderDate']."','". $obj['ShipDate'] ."','". $obj['CancelDate'] ."',
-                '". $obj['StoreID'] ."','". $obj['StoreNumber']."',
-                '". $obj['Notes']."'
-            );";
+                '". $obj['StoreID'] ."','". $obj['StoreNumber']."','". $obj['Notes']."','".$userID."','". $createdDate."','".$userID."','". $createdDate."'
+            );";            
             $result = mysqli_query($db, $sql);
             if($result == false){
                 echo "Fail Query";
@@ -194,6 +195,9 @@
         function addNewProduct(){
             global $objArray,$db;
             $obj = $objArray['params']['product'];
+            $userID = $objArray['params']['userID'];
+            date_default_timezone_set("America/New_York");
+            $createdDate = date("Y-m-d h:i:sa");
             $swValues = json_encode($obj['SizeWidthValues']);
             $UPCValues = json_encode($obj['UPCValues']);
             $availableWidths = json_encode($obj['selectedAvailableWidths']);
@@ -235,12 +239,14 @@
             $swValues = mysqli_real_escape_string($db, $swValues);
             $selectedCategories =  mysqli_real_escape_string($db, $selectedCategories);
             $UPCValues = mysqli_real_escape_string($db, $UPCValues);
+            $productName = $obj['StyleName'] . ' '. $obj['ColorName'];
 
             $sql = "INSERT INTO Po_Products ( PurchaseOrderID, ProductType, ProductTypeID, MfgSku, StyleName, Color, Cost, Retail, ColorGroupName, ColorGroupID,
             WeightLbs, StratusProductType, StratusProductTypeID, StratusSubType1, StratusSubType1ID, StratusSubType2, StratusSubType2ID, 
             SizeRangeType, SizeRangeTypeID, SmallestAvailableSize, SmallestAvailableSizeID, LargestAvailableSize, LargestAvailableSizeID, AvailableSizes, pWidth, 
             WidthType, WidthTypeID, AvailableWidths,
-            SizeWidthValues, Quantity, UPCValues, LongDescription, BulletPoints, NewColorOfExistingStyle, Categories, TDCartExtra_field_2, FormulatedCategory, Sale)
+            SizeWidthValues, Quantity, UPCValues, LongDescription, BulletPoints, NewColorOfExistingStyle, Categories, TDCartExtra_field_2, FormulatedCategory, Sale, ProductName, 
+            ProductCreatedByID, ProductCreatedDate, ProductLastModifiedByID, ProductLastModifiedDate)
             VALUES (
                 '" . $obj['PurchaseOrderID']  ."',
                 '" . $obj['ProductType'] ."',
@@ -279,7 +285,12 @@
                 '" . $selectedCategories ."',
                 '" . $obj['TDCartExtra_field_2']."',
                 '" . $obj['formulatedCategory']."',
-                '" . $obj['Sale']."'                
+                '" . $obj['Sale']."',
+                '" . $productName ."',
+                '" .$userID."',
+                '" . $createdDate."',
+                '" .$userID."',
+                '" . $createdDate."'               
                 );";
                 // $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
                 // fwrite($myfile, $sql);
@@ -355,7 +366,10 @@
         function updatePurchaseOrder(){
             global $objArray,$db;
             $obj = $objArray['params']['po'];
-          
+            $userID = $objArray['params']['userID']; 
+            date_default_timezone_set("America/New_York");           
+            $modifyDate = date("Y-m-d h:i:sa");
+
             $obj['VendorName']= mysqli_real_escape_string($db, $obj['VendorName']);
             $obj['BrandName']= mysqli_real_escape_string($db, $obj['BrandName']);
             
@@ -371,7 +385,9 @@
             CancelDate = '". $obj['CancelDate']. "',
             StoreID = '". $obj['StoreID']. "',           
             StoreNumber = '". $obj['StoreNumber']. "',
-            Notes = '". $obj['Notes']. "'
+            Notes = '". $obj['Notes']. "',
+            LastModifiedByID = '". $userID. "',
+            LastModifiedDate = '". $modifyDate . "'
             where ID=".$obj['ID'].";";
             //  $myfile = fopen("newfile.txt", "w") or die("Unable to open file!");
             //  fwrite($myfile, $sql);
@@ -388,6 +404,10 @@
         function updateProduct(){
             global $objArray,$db;
             $obj = $objArray['params']['product'];
+            $userID = $objArray['params']['userID'];  
+            date_default_timezone_set("America/New_York");          
+            $modifyDate = date("Y-m-d h:i:sa");
+
             $swValues = json_encode($obj['SizeWidthValues']);
             $UPCValues = json_encode($obj['UPCValues']);
             $availableWidths = json_encode($obj['selectedAvailableWidths']);
@@ -406,7 +426,7 @@
             $swValues = mysqli_real_escape_string($db, $swValues);
             $selectedCategories =  mysqli_real_escape_string($db, $selectedCategories);
             $UPCValues = mysqli_real_escape_string($db, $UPCValues);
-
+            $productName = $obj['StyleName'] . ' '. $obj['ColorName'];
             // TDCartExtra_field_2 = Brand Category
             
             // PurchaseOrderID, ProductType, ProductTypeID, MfgSku, StyleName, Color, Cost, Retail, ColorGroupName, ColorGroupID,
@@ -452,11 +472,14 @@
                 Categories = '" . $selectedCategories ."',
                 TDCartExtra_field_2 = '" . $obj['TDCartExtra_field_2']."',
                 FormulatedCategory = '" . $obj['formulatedCategory']."',
-                Sale = '" . $obj['Sale']."'            
+                Sale = '" . $obj['Sale']."',
+                ProductName = '" . $productName."',
+                ProductLastModifiedByID = '" . $userID."',
+                ProductLastModifiedDate = '" . $modifyDate."'            
             where ID=".$obj['ID'].";";
-             $myfile = fopen("newfileUpdate.txt", "w") or die("Unable to open file!");
-             fwrite($myfile, $sql);
-             fclose($myfile);
+            //  $myfile = fopen("newfileUpdate.txt", "w") or die("Unable to open file!");
+            //  fwrite($myfile, $sql);
+            //  fclose($myfile);
 
             $result = mysqli_query($db, $sql);
             if($result == false){
